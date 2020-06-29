@@ -54,6 +54,29 @@ int main(int argc, char *argv[])
         exit(EXIT_FAILURE);
     }
 
+    // char word[16] = "bury";
+    // int end = stem(word, 0, strlen(word) - 1);
+    // word[end + 1] = '\0';
+    // printf("%s\n", word);
+
+    // 3 burial
+    // 15 burials
+    // 34 buried
+    // 6 unburied
+    // 15 burier(s)
+    // 17 bury
+    // ------------
+    // 90 total
+
+    // 56 buri out
+    // 54 buri exp
+
+    // 18 burial
+    // 34 buri
+    // 6 unburi
+    // 15 burier
+    // 17 buri
+
     // build stopword dictionary
     Dict stopwords = build_stopwords();
 
