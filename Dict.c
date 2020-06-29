@@ -165,7 +165,7 @@ void showTopN(Dict topN[], int N)
         return;
 
     for (int i = 0; i < N; i++)
-        printf("    %*d %s\n", 3, topN[i]->freq, topN[i]->word);
+        printf("%*d %s\n", 7, topN[i]->freq, topN[i]->word);
 }
 
 /**
