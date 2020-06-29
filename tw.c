@@ -24,7 +24,6 @@ extern Dict insert(Dict d, char *w);
 extern int find(Dict d, char *w);
 extern void getTopN(Dict d, Dict topN[], const int N);
 extern void showTopN(Dict topN[], int N);
-extern Dict freeDict(Dict w);
 static Dict build_stopwords(void);
 static Dict scan_file(char *fileName, Dict stopwords);
 static char *normalise(char *word);
@@ -72,11 +71,6 @@ int main(int argc, char *argv[])
    getTopN(wfreqs, topN, nWords);
    showTopN(topN, nWords);
 
-   // done
-   // freeDict(stopwords);
-   // freeDict(wfreqs);
-   // for (int i = 0; i < nWords; i++)
-   //    free(topN[i]);
    return EXIT_SUCCESS;
 }
 
@@ -135,7 +129,7 @@ static Dict scan_file(char *fileName, Dict stopwords)
          word = normalise(word);
 
          // if word is not a stopword and is not an empty string
-         if (!find(stopwords, word) && strcmp(word, "") != 0 && strcmp(word, "-") != 0)
+         if (!find(stopwords, word) && strcmp(word, "") != 0 && strcmp(word, "-") != 0 && strcmp(word, "'") != 0)
          {
             int end = stem(word, 0, strlen(word) - 1);
             word[end + 1] = '\0';

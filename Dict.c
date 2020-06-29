@@ -23,13 +23,9 @@ typedef struct _DictRep
  * Converts a char* w into a hashed unsigned long using djb2 algorithm.
  * 
  * Significantly faster than strcmp for string comparison:
- *      data/0011.txt
- *      strcmp - 0.094s
- *      hashing - 0.047s
- * 
  *      data/2701.txt
- *      strcmp - 0.745s
- *      hashing - 0.412s
+ *      strcmp - 1.200s
+ *      hashing - 0.380s
  */
 static unsigned long djb2(char *w)
 {
@@ -40,22 +36,6 @@ static unsigned long djb2(char *w)
         hash = (hash << 5) + hash + c;
 
     return hash;
-}
-
-static void insertionSort(Dict topN[], int N)
-{
-    int i, element, j;
-    for (i = 1; i < N; i++)
-    {
-        element = topN[i];
-        j = i - 1;
-        while (j >= 0 && topN[j] > element)
-        {
-            topN[j + 1] = topN[j];
-            j = j - 1;
-        }
-        topN[j + 1] = element;
-    }
 }
 
 /**
@@ -151,6 +131,19 @@ void getTopN(Dict d, Dict topN[], int N)
             break;
         }
 
+        // if words are same frequency
+        if (topN[i]->freq == d->freq)
+            if (strcmp(d->word, topN[i]->word) < 0)
+            {
+                // shift topN array by 1 from i
+                memmove(&topN[i + 1], &topN[i], (N - i - 1) * sizeof(topN[0]));
+
+                // insert into topN at i
+                topN[i] = d;
+                break;
+            }
+
+        // insert Dict into topN
         if (topN[i]->freq < d->freq)
         {
             // shift topN array by 1 from i
@@ -177,11 +170,8 @@ void showTopN(Dict topN[], int N)
     if (topN == NULL)
         return;
 
-    // insertion sort is good for nearly sorted data
-    insertionSort(topN, N);
-
     for (int i = 0; i < N; i++)
-        printf("\t %d %s\n", topN[i]->freq, topN[i]->word);
+        printf("    %*d %s\n", 3, topN[i]->freq, topN[i]->word);
 }
 
 /**
@@ -195,48 +185,4 @@ void showDict(Dict d)
     showDict(d->left);
     printf("%s ", d->word);
     showDict(d->right);
-}
-
-Dict freeDict(Dict w)
-{
-    if (w == NULL)
-        return NULL;
-
-    else if (w->left == NULL && w->right == NULL)
-    {
-        free(w->word);
-        free(w);
-        return NULL;
-    }
-    else if (w->left == NULL && w->right != NULL)
-    {
-        Word *tmp = w->right;
-        free(w->word);
-        free(w);
-        return tmp;
-    }
-    else if (w->left != NULL && w->right == NULL)
-    {
-        Word *tmp = w->left;
-        free(w->word);
-        free(w);
-        return tmp;
-    }
-    else
-    {
-        Dict parent = w;
-        Dict succ = w->right; // not null!
-        while (succ->left != NULL)
-        {
-            parent = succ;
-            succ = succ->left;
-        }
-        w->word = succ->word;
-        free(succ);
-        if (parent == w)
-            parent->right = succ->right;
-        else
-            parent->left = succ->right;
-        return w;
-    }
 }
