@@ -47,11 +47,17 @@ static Word *newWord(char *w)
     Word *word = malloc(sizeof(Word));
     if (word == NULL)
     {
-        fprintf(stderr, "Could not allocate memory for new word\n");
+        fprintf(stderr, "Could not allocate memory for word struct\n");
         exit(EXIT_FAILURE);
     }
 
-    word->word = strdup(w); // make copy as original char* will be destroyed
+    word->word = strdup(w); // strdup has hidden malloc
+    if (word->word == NULL)
+    {
+        fprintf(stderr, "Could not allocate memory for word->word\n");
+        exit(EXIT_FAILURE);
+    }
+
     word->freq = 1;
     word->left = word->right = NULL;
 
@@ -114,9 +120,10 @@ int find(Dict d, char *w)
 }
 
 /**
- * Find top N frequently occurring words in a Dict.
+ * Find top N frequently occurring words in a Dict and stores them in
+ * alphabetical order.
  */
-void getTopN(Dict d, Dict topN[], int N)
+void getTopN(const Dict d, Dict topN[], int N)
 {
     if (d == NULL || topN == NULL || N == 0)
         return;
@@ -127,24 +134,14 @@ void getTopN(Dict d, Dict topN[], int N)
         // empty element
         if (topN[i] == NULL)
         {
-            topN[i] = d;
+            topN[i] = newWord(d->word);
+            topN[i]->freq = d->freq;
             break;
         }
 
-        // if words are same frequency
-        if (topN[i]->freq == d->freq)
-            if (strcmp(d->word, topN[i]->word) < 0)
-            {
-                // shift topN array by 1 from i
-                memmove(&topN[i + 1], &topN[i], (N - i - 1) * sizeof(topN[0]));
-
-                // insert into topN at i
-                topN[i] = d;
-                break;
-            }
-
         // insert Dict into topN
-        if (topN[i]->freq < d->freq)
+        if ((topN[i]->freq == d->freq && strcmp(d->word, topN[i]->word) < 0) ||
+            topN[i]->freq < d->freq)
         {
             // shift topN array by 1 from i
             memmove(&topN[i + 1], &topN[i], (N - i - 1) * sizeof(topN[0]));
@@ -161,9 +158,6 @@ void getTopN(Dict d, Dict topN[], int N)
 
 /**
  * Print index 0 to N of topN array.
- * 
- * showTopN is defined in Dict.c due to C's inherent design to prevent access
- * to topN members in main.c.
  */
 void showTopN(Dict topN[], int N)
 {

@@ -66,8 +66,7 @@ int main(int argc, char *argv[])
    // compute and display the top N words
    Dict topN[nWords];
    for (int i = 0; i < nWords; i++)
-      topN[i] = malloc(sizeof(Dict));
-
+      topN[i] = newDict();
    getTopN(wfreqs, topN, nWords);
    showTopN(topN, nWords);
 
