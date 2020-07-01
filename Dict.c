@@ -100,8 +100,6 @@ Dict insert(Dict d, char *w)
  * Finds the specified word in the dictionary given by char* w.
  * 
  * Returns NULL if word is not found.
- * 
- * Note: return destroys the stack therefore "bubbling" the answer through recursion.
  */
 int find(Dict d, char *w)
 {

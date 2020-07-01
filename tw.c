@@ -2,6 +2,29 @@
 // tw.c ... compute top N most frequent words in file F
 // Usage: ./tw [Nwords] File
 
+/**
+ * PLAGIARISM NOTICE
+ * 
+ * The implementation of the following function:
+ * 
+ * line 235:    static char *strtok_t(char *str, int (*test)(int ch));
+ * 
+ * has been used from the following external intellectual source:
+ * 
+ * AUTHOR: BLUEPIXY
+ * LICENSE: CC BY-SA 3.0
+ * URL: https://stackoverflow.com/a/26243667/13133452
+ * COMMENTS: Brace styling and variable names changed from original code.
+ * 
+ * I acknowledge the implementation of this function is NOT an adequate
+ * solution of the assignment and is compliant with CSE's plagiariasm policy.
+ * 
+ * "it is important to understand that although appropriate attribution
+ * implies that derived work does not constitute plagiarism, it generally also
+ * implies that the work is not an adequate solution of the assignment."
+ * 
+ */
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
@@ -164,7 +187,8 @@ static Dict scan_file(char *fileName, Dict stopwords)
 
     // scan the file
     while (fgets(line, sizeof(line), in) && strstr(line, ENDING) == NULL)
-        for (char *word = strtok_t(line, isWordChar); word != NULL; word = strtok_t(NULL, isWordChar))
+        for (char *word = strtok_t(line, isWordChar); word != NULL;
+             word = strtok_t(NULL, isWordChar))
         {
             word = normalise(word);
 
@@ -199,7 +223,12 @@ static char *normalise(char *word)
 }
 
 /**
- * Implement own strtok function to pass isWordChar lambda.
+ * Alternative strtok function to pass isWordChar lambda.
+ * 
+ * AUTHOR: BLUEPIXY
+ * LICENSE: CC BY-SA 3.0
+ * URL: https://stackoverflow.com/a/26243667/13133452
+ * COMMENTS: Brace styling and variable naming changed from original code.
  */
 static char *strtok_t(char *str, int (*lambda)(int c))
 {
