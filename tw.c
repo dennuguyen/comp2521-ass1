@@ -45,15 +45,10 @@
 
 // change from #define to function to be able to use as function pointer
 static int isWordChar(int c) { return isalnum(c) || c == '\'' || c == '-'; }
-
-extern Dict insert(Dict d, char *w);
-extern int find(Dict d, char *w);
-extern void getTopN(Dict d, Dict topN[], int N);
-extern void showTopN(Dict topN[], int N);
 static Dict build_stopwords(void);
 static Dict scan_file(char *fileName, Dict stopwords);
 static char *normalise(char *word);
-static char *strtok_t(char *str, int (*test)(int ch));
+static char *strtok_t(char *str, int (*func)(int ch));
 
 int main(int argc, char *argv[])
 {
@@ -91,11 +86,7 @@ int main(int argc, char *argv[])
     // showDict(wfreqs);
 
     // compute and display the top N words
-    Dict topN[nWords];
-    for (int i = 0; i < nWords; i++)
-        topN[i] = newDict();
-    getTopN(wfreqs, topN, nWords);
-    showTopN(topN, nWords);
+    findTopN(wfreqs, NULL, nWords);
 
     return EXIT_SUCCESS;
 }
@@ -123,7 +114,7 @@ static Dict build_stopwords(void)
     // get the stop words and insert it into the dictionary
     char line[MAXLINE];
     while (fgets(line, sizeof(line), in))
-        stopwords = insert(stopwords, normalise(line));
+        DictInsert(stopwords, normalise(line));
 
     fclose(in);
     snprintf(buffer, sizeof(buffer), "rm %s", RANDSTOPWORDS);
@@ -169,13 +160,13 @@ static Dict scan_file(char *fileName, Dict stopwords)
         {
             word = normalise(word);
 
-            if (strlen(word) <= 1) // skip words that of length 1 or 0
+            if (strlen(word) <= 1) // skip words of length 1 or 0
                 continue;
-            else if (!find(stopwords, word))
+            else if (!DictFind(stopwords, word))
             {
                 int end = stem(word, 0, strlen(word) - 1);
                 word[end + 1] = '\0';
-                wfreqs = insert(wfreqs, word);
+                DictInsert(wfreqs, word);
             }
         }
 
@@ -200,14 +191,14 @@ static char *normalise(char *word)
 }
 
 /**
- * Alternative strtok function to pass isWordChar lambda.
+ * Alternative strtok function to pass isWordChar function pointer.
  * 
  * AUTHOR: BLUEPIXY
  * LICENSE: CC BY-SA 3.0
  * URL: https://stackoverflow.com/a/26243667/13133452
  * COMMENTS: Brace styling and variable naming changed from original code.
  */
-static char *strtok_t(char *str, int (*lambda)(int c))
+static char *strtok_t(char *str, int (*func)(int c))
 {
     static char *store = NULL;
     char *word;
@@ -218,14 +209,14 @@ static char *strtok_t(char *str, int (*lambda)(int c))
     if (store == NULL)
         return NULL;
 
-    while (*store && !lambda(*store))
+    while (*store && !func(*store))
         ++store;
 
     if (*store == '\0')
         return NULL;
 
     word = store;
-    while (*store && lambda(*store))
+    while (*store && func(*store))
         ++store;
 
     if (*store == '\0')

@@ -78,7 +78,7 @@ Dict newDict()
  * 
  * Returns a Word*.
  */
-Dict insert(Dict d, char *w)
+static Dict insert(Dict d, char *w)
 {
     if (d == NULL)
         return newWord(w);
@@ -97,11 +97,20 @@ Dict insert(Dict d, char *w)
 }
 
 /**
+ * Honouring Dict.h
+ */
+WFreq *DictInsert(Dict d, char *w)
+{
+    d = insert(d, w);
+    return NULL;
+}
+
+/**
  * Finds the specified word in the dictionary given by char* w.
  * 
  * Returns FALSE if word is not found.
  */
-int find(Dict d, char *w)
+static int find(Dict d, char *w)
 {
     if (d == NULL)
         return FALSE;
@@ -118,10 +127,19 @@ int find(Dict d, char *w)
 }
 
 /**
+ * Honouring Dict.h
+ */
+WFreq *DictFind(Dict d, char *w)
+{
+    WFreq *placeholder = &(WFreq){.freq = 0, .word = ""};
+    return find(d, w) ? placeholder : NULL;
+}
+
+/**
  * Find top N frequently occurring words in a Dict and stores them in
  * alphabetical order.
  */
-void getTopN(Dict d, Dict topN[], int N)
+static void getTopN(Dict d, Dict topN[], int N)
 {
     if (d == NULL || topN == NULL || N == 0)
         return;
@@ -157,13 +175,26 @@ void getTopN(Dict d, Dict topN[], int N)
 /**
  * Print index 0 to N-1 of topN array.
  */
-void showTopN(Dict topN[], int N)
+static void showTopN(Dict topN[], int N)
 {
     if (topN == NULL)
         return;
 
     for (int i = 0; i < N; i++)
         printf("%*d %s\n", 7, topN[i]->freq, topN[i]->word);
+}
+
+/**
+ * Honouring Dict.h
+ */
+int findTopN(Dict d, WFreq *wfs, int n)
+{
+    Dict topN[n];
+    for (int i = 0; i < n; i++)
+        topN[i] = newDict();
+    getTopN(d, topN, n);
+    showTopN(topN, n);
+    return 0;
 }
 
 /**
