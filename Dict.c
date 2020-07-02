@@ -99,7 +99,7 @@ Dict insert(Dict d, char *w)
 /**
  * Finds the specified word in the dictionary given by char* w.
  * 
- * Returns NULL if word is not found.
+ * Returns FALSE if word is not found.
  */
 int find(Dict d, char *w)
 {
@@ -121,7 +121,7 @@ int find(Dict d, char *w)
  * Find top N frequently occurring words in a Dict and stores them in
  * alphabetical order.
  */
-void getTopN(const Dict d, Dict topN[], int N)
+void getTopN(Dict d, Dict topN[], int N)
 {
     if (d == NULL || topN == NULL || N == 0)
         return;
@@ -155,7 +155,7 @@ void getTopN(const Dict d, Dict topN[], int N)
 }
 
 /**
- * Print index 0 to N of topN array.
+ * Print index 0 to N-1 of topN array.
  */
 void showTopN(Dict topN[], int N)
 {

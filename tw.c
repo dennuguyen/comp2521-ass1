@@ -48,7 +48,7 @@ static int isWordChar(int c) { return isalnum(c) || c == '\'' || c == '-'; }
 
 extern Dict insert(Dict d, char *w);
 extern int find(Dict d, char *w);
-extern void getTopN(Dict d, Dict topN[], const int N);
+extern void getTopN(Dict d, Dict topN[], int N);
 extern void showTopN(Dict topN[], int N);
 static Dict build_stopwords(void);
 static Dict scan_file(char *fileName, Dict stopwords);
@@ -76,29 +76,6 @@ int main(int argc, char *argv[])
         fprintf(stderr, "Usage: %s [Nwords] File\n", argv[0]);
         exit(EXIT_FAILURE);
     }
-
-    // char word[16] = "bury";
-    // int end = stem(word, 0, strlen(word) - 1);
-    // word[end + 1] = '\0';
-    // printf("%s\n", word);
-
-    // 3 burial
-    // 15 burials
-    // 34 buried
-    // 6 unburied
-    // 15 burier(s)
-    // 17 bury
-    // ------------
-    // 90 total
-
-    // 56 buri out
-    // 54 buri exp
-
-    // 18 burial
-    // 34 buri
-    // 6 unburi
-    // 15 burier
-    // 17 buri
 
     // build stopword dictionary
     Dict stopwords = build_stopwords();
