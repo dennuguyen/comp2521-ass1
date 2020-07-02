@@ -4,9 +4,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "Dict.h"
 
-#include <assert.h>
+#include "Dict.h"
 
 #define FALSE 0
 #define TRUE !FALSE
@@ -78,7 +77,7 @@ Dict newDict()
  * 
  * Returns a Word*.
  */
-static Dict insert(Dict d, char *w)
+Word *insert(Word *d, char *w)
 {
     if (d == NULL)
         return newWord(w);
@@ -98,10 +97,23 @@ static Dict insert(Dict d, char *w)
 
 /**
  * Honouring Dict.h
+ * 
+ * This function cannot be honoured as Dict d must be passed by pointer to
+ * update the dictionary that was declared in tw.c, i.e.:
+ * 
+ *      WFreq *DictInsert(Dict *d, char *w)
+ *      WFreq *DictInsert(struct _DictRep &d, char *w)
+ * 
+ * or the function will return a Dict where an assignment can occur in tw.c,
+ * i.e.:
+ * 
+ *      Dict DictInsert(Dict d, char *w)
+ * 
+ * or use a second struct to hold a pointer to the tree.
  */
 WFreq *DictInsert(Dict d, char *w)
 {
-    d = insert(d, w);
+    d = insert(d, w); // this will not update d declared in tw.c as it is local
     return NULL;
 }
 
@@ -110,7 +122,7 @@ WFreq *DictInsert(Dict d, char *w)
  * 
  * Returns FALSE if word is not found.
  */
-static int find(Dict d, char *w)
+static int find(Word *d, char *w)
 {
     if (d == NULL)
         return FALSE;
@@ -139,7 +151,7 @@ WFreq *DictFind(Dict d, char *w)
  * Find top N frequently occurring words in a Dict and stores them in
  * alphabetical order.
  */
-static void getTopN(Dict d, Dict topN[], int N)
+static void getTopN(Word *d, Word *topN[], int N)
 {
     if (d == NULL || topN == NULL || N == 0)
         return;
@@ -175,7 +187,7 @@ static void getTopN(Dict d, Dict topN[], int N)
 /**
  * Print index 0 to N-1 of topN array.
  */
-static void showTopN(Dict topN[], int N)
+static void showTopN(Word *topN[], int N)
 {
     if (topN == NULL)
         return;
@@ -194,7 +206,7 @@ int findTopN(Dict d, WFreq *wfs, int n)
         topN[i] = newDict();
     getTopN(d, topN, n);
     showTopN(topN, n);
-    return 0;
+    return EXIT_SUCCESS;
 }
 
 /**

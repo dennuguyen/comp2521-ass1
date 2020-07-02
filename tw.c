@@ -45,6 +45,8 @@
 
 // change from #define to function to be able to use as function pointer
 static int isWordChar(int c) { return isalnum(c) || c == '\'' || c == '-'; }
+
+extern Dict insert(Dict d, char *w);
 static Dict build_stopwords(void);
 static Dict scan_file(char *fileName, Dict stopwords);
 static char *normalise(char *word);
@@ -83,7 +85,7 @@ int main(int argc, char *argv[])
         return EXIT_SUCCESS;
 
     // debugging
-    // showDict(wfreqs);
+    // showDict(stopwords);
 
     // compute and display the top N words
     findTopN(wfreqs, NULL, nWords);
@@ -114,7 +116,7 @@ static Dict build_stopwords(void)
     // get the stop words and insert it into the dictionary
     char line[MAXLINE];
     while (fgets(line, sizeof(line), in))
-        DictInsert(stopwords, normalise(line));
+        stopwords = insert(stopwords, normalise(line));
 
     fclose(in);
     snprintf(buffer, sizeof(buffer), "rm %s", RANDSTOPWORDS);
@@ -166,7 +168,7 @@ static Dict scan_file(char *fileName, Dict stopwords)
             {
                 int end = stem(word, 0, strlen(word) - 1);
                 word[end + 1] = '\0';
-                DictInsert(wfreqs, word);
+                wfreqs = insert(wfreqs, word);
             }
         }
 
